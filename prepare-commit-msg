@@ -2,10 +2,12 @@
 
 import sys
 # the path to the file that holds the commit message
-print(len(sys.argv))
+arg_len = len(sys.argv)
+print(arg_len)
+print(sys.argv)
 msg_file_path = sys.argv[1]
-commit_type = sys.argv[2]
-sha = sys.argv[3] if len(sys.argv) > 3 else None
+commit_type = sys.argv[2] if arg_len > 2 else None
+sha = sys.argv[3] if arg_len > 3 else None
 
 print 'Number of arguments:', len(sys.argv), 'arguments.'
 print 'Argument List:', [msg_file_path, commit_type, sha]
