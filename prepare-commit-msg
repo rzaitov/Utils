@@ -1,6 +1,21 @@
 #!/usr/bin/python
 
 import sys
+import os
+import git
+
+path = os.getcwd()
+repo = git.Repo(path)
+print(path, repo)
+
+def prepare_commit_msg():
+	try:
+		with open(path, 'w') as f:
+			content = f.read()
+			f.write("{0}{1}".format("hello", content))
+	except:
+		pass
+
 # the path to the file that holds the commit message
 arg_len = len(sys.argv)
 print(arg_len)
@@ -11,3 +26,5 @@ sha = sys.argv[3] if arg_len > 3 else None
 
 print 'Number of arguments:', len(sys.argv), 'arguments.'
 print 'Argument List:', [msg_file_path, commit_type, sha]
+
+prepare_commit_msg()
