@@ -8,11 +8,18 @@ path = os.getcwd()
 repo = git.Repo(path)
 print(path, repo)
 
-def prepare_commit_msg(msg_file_path):
+def format_sample_names(sample_names):
+	prefix = ""
+	if len(sample_names) > 0:
+		sample_names = ["[{0}]".format(s_name) for s_name in sample_names]
+		prefix = "".join(sample_names)
+	return prefix
+
+def prepare_commit_msg(msg_file_path, prefix):
 	with open(msg_file_path, 'r+') as f:
 		content = f.read()
 		f.seek(0)
-		f.write("{0}{1}".format("hello", content))
+		f.write("{0} {1}".format(prefix, content))
 		f.truncate()
 
 # the path to the file that holds the commit message
@@ -26,4 +33,5 @@ sha = sys.argv[3] if arg_len > 3 else None
 print 'Number of arguments:', len(sys.argv), 'arguments.'
 print 'Argument List:', [msg_file_path, commit_type, sha]
 
-prepare_commit_msg(msg_file_path)
+msg_prefix = format_sample_names(["first", "second"])
+prepare_commit_msg(msg_file_path, msg_prefix)
