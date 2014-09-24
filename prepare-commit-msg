@@ -52,7 +52,8 @@ def prepare_commit_msg(file_path, prefix):
 
 result = subprocess.check_output(["git", "diff-index", "--cached", "--name-only", "HEAD"])
 modified_files = result.split()
-#print modified_files
+modified_files = [os.path.abspath(f) for f in modified_files]
+print modified_files
 
 # the path to the file that holds the commit message
 arg_len = len(sys.argv)
