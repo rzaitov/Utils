@@ -2,36 +2,69 @@
 
 import sys
 import os
-import git
+import subprocess
 
-path = os.getcwd()
-repo = git.Repo(path)
-print(path, repo)
+def fetch_sample_name(dir_path):
+		parent_dir_path = os.path.dirname(dir_path)
+		file_names = os.listdir(dir_path)
+		sln_name = next((f for f in file_names if f.endswith(".sln")), None)
+		if sln_name is None and os.getcwd() != dir_path:
+			sln_name = fetch_sample_name(parent_dir_path)
+		return sln_name
 
-def format_sample_names(sample_names):
+
+def fetch_affected_dirs(modified_files):
+	dir_paths = [os.path.dirname(f) for f in modified_files]
+	dir_paths = list(set(dir_paths))
+	return dir_paths
+
+
+def fetch_sln_names(modified_files):
+	sample_names = []
+	dir_paths = fetch_affected_dirs(modified_files)
+
+	for dir_path in dir_paths:
+		name = fetch_sample_name(dir_path)
+		if name is not None:
+			sample_names.append(name)
+
+	sample_names = list(set(sample_names))
+	sample_names = [f_name[:-4] for f_name in sample_names]
+	return sample_names
+
+
+def create_prefix(sample_names):
 	prefix = ""
 	if len(sample_names) > 0:
 		sample_names = ["[{0}]".format(s_name) for s_name in sample_names]
 		prefix = "".join(sample_names)
+		prefix += " "
 	return prefix
 
-def prepare_commit_msg(msg_file_path, prefix):
-	with open(msg_file_path, 'r+') as f:
+
+def prepare_commit_msg(file_path, prefix):
+	with open(file_path, 'r+') as f:
 		content = f.read()
 		f.seek(0)
-		f.write("{0} {1}".format(prefix, content))
+		f.write("{0}{1}".format(prefix, content))
 		f.truncate()
+
+
+result = subprocess.check_output(["git", "diff-index", "--cached", "--name-only", "HEAD"])
+modified_files = result.split()
+#print modified_files
 
 # the path to the file that holds the commit message
 arg_len = len(sys.argv)
-print(arg_len)
-print(sys.argv)
+#print(arg_len)
+#print(sys.argv)
 msg_file_path = sys.argv[1]
 commit_type = sys.argv[2] if arg_len > 2 else None
 sha = sys.argv[3] if arg_len > 3 else None
 
-print 'Number of arguments:', len(sys.argv), 'arguments.'
-print 'Argument List:', [msg_file_path, commit_type, sha]
+if commit_type is None:
+	names = fetch_sln_names(modified_files)
+	prefix = create_prefix(names)
+	#print(names)
 
-msg_prefix = format_sample_names(["first", "second"])
-prepare_commit_msg(msg_file_path, msg_prefix)
+	prepare_commit_msg(msg_file_path, prefix)
