@@ -8,6 +8,7 @@ group = parser.add_mutually_exclusive_group()
 group.add_argument("-ios", action='store_true', default=False)
 group.add_argument("-android", action='store_true', default=False)
 group.add_argument("-wp", action='store_true', default=False)
+group.add_argument("-mac", action='store_true', default=False)
 
 args = parser.parse_args()
 platform = None
@@ -17,16 +18,19 @@ elif args.android:
 	platform = "android"
 elif args.wp:
 	platform = "wp"
+elif args.mac:
+	platform = "mac"
 
 # additional tags per platform
 platform_tags = {"ios": ["iOS8"],
 		"android": [],
-		"wp": []
+		"wp": [],
+		"mac": ["Yosemite"]
 }
 common_tags = ["User Interface", "Data", "Graphics", "Media", "Platform Features", "Device Features", "Cloud",
 			   "Backgrounding", "Maps & Location", "Binding + Interop", "Notifications", "Touch", "Getting Started",
 			   "Async"]
-platforms = {"ios": "iOS", "android": "Android", "wp": "Windows"}
+platforms = {"ios": "iOS", "android": "Android", "wp": "Windows", "mac": ""}
 
 content_template = """
 <?xml version="1.0" encoding="utf-8" ?>

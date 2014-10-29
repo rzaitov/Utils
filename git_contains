@@ -1,0 +1,30 @@
+#!/usr/bin/python
+import argparse
+
+parser = argparse.ArgumentParser(description='generate Metadata.xml')
+group = parser.add_mutually_exclusive_group()
+group.add_argument("-ios")
+group.add_argument("-android")
+group.add_argument("-wp")
+
+args = parser.parse_args()
+
+# additional tags per platform
+tags = { "ios": "iOS8", "android": "", "wp": ""}
+common_tags = "User Interface, Data, Graphics, Media, Platform Features, Device Features, Cloud, Backgrounding, Maps & Location, Binding + Interop, Notifications, Touch, Getting Started, Async"
+platforms = {"ios": "iOS", "android": "Android", "wp": "Windows"}
+
+content_template = """
+<?xml version="1.0" encoding="utf-8" ?>
+<SampleMetadata>
+	<ID>{guid}</ID>
+	<IsFullApplication>true|false</IsFullApplication>
+	<Level>Advanced|Beginning|Intermediate</Level>
+	<Tags>{tags}</Tags>
+	<SupportedPlatforms>{platform}</SupportedPlatforms>
+	<Gallery>false|true</Gallery>
+	<MinimumLicenseRequirement>Starter|Indie|Business|Enterprise</MinimumLicenseRequirement>
+</SampleMetadata>
+"""
+
+content = content_template.format()
