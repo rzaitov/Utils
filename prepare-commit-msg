@@ -4,13 +4,22 @@ import sys
 import os
 import subprocess
 
-def fetch_sample_name(dir_path):
-		parent_dir_path = os.path.dirname(dir_path)
-		file_names = os.listdir(dir_path)
-		sln_name = next((f for f in file_names if f.endswith(".sln")), None)
-		if sln_name is None and os.getcwd() != dir_path:
-			sln_name = fetch_sample_name(parent_dir_path)
-		return sln_name
+def fetch_sample_name(dir_path, processed_dirs):
+	if dir_path in processed_dirs:
+		return None
+
+	if not os.path.exists(dir_path):
+		processed_dirs.add(dir_path)
+		return None
+
+	parent_dir_path = os.path.dirname(dir_path)
+	file_names = os.listdir(dir_path)
+	sln_name = next((f for f in file_names if f.endswith(".sln")), None)
+	processed_dirs.add(dir_path)
+
+	if sln_name is None and os.getcwd() != dir_path:
+		sln_name = fetch_sample_name(parent_dir_path, processed_dirs)
+	return sln_name
 
 
 def fetch_affected_dirs(modified_files):
@@ -22,9 +31,10 @@ def fetch_affected_dirs(modified_files):
 def fetch_sln_names(modified_files):
 	sample_names = []
 	dir_paths = fetch_affected_dirs(modified_files)
+	processed_dirs = set()
 
 	for dir_path in dir_paths:
-		name = fetch_sample_name(dir_path)
+		name = fetch_sample_name(dir_path, processed_dirs)
 		if name is not None:
 			sample_names.append(name)
 
