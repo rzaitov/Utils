@@ -65,6 +65,8 @@ modified_files = result.split()
 modified_files = [os.path.abspath(f) for f in modified_files]
 #print modified_files
 
+xamarin_version, error = subprocess.Popen("ls -l /Library/Frameworks/Xamarin.iOS.framework/Versions/ | grep Current | sed -n 's/.*Current -> //p'", shell=True, stdout=subprocess.PIPE).communicate()
+xamarin_version = "Xamarin.iOS {ver}".format(ver=xamarin_version)
 # the path to the file that holds the commit message
 arg_len = len(sys.argv)
 #print(arg_len)
@@ -76,6 +78,7 @@ sha = sys.argv[3] if arg_len > 3 else None
 if commit_type is None:
 	names = fetch_sln_names(modified_files)
 	prefix = create_prefix(names)
+	prefix += '\n' + xamarin_version
 	#print(names)
 
 	prepare_commit_msg(msg_file_path, prefix)
