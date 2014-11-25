@@ -59,18 +59,23 @@ def prepare_commit_msg(file_path, prefix):
 		f.write("{0}{1}".format(prefix, content))
 		f.truncate()
 
+def get_framework_versions():
+	bash_cmd = "ls -l /Library/Frameworks/Xamarin.{0}.framework/Versions/ | grep Current | sed -n 's/.*Current -> //p'"
+	ios_version, error1 = subprocess.Popen(bash_cmd.format("iOS"), shell=True, stdout=subprocess.PIPE).communicate()
+	mac_version, error2 = subprocess.Popen(bash_cmd.format("Mac"), shell=True, stdout=subprocess.PIPE).communicate()
+
+	ios_version = ios_version.strip().split("/")[-1]
+	mac_version = mac_version.strip().split("/")[-1]
+
+	versions = "#Xamarin.iOS {ios_ver}\n#Xamarin.Mac {mac_ver}".format(ios_ver=ios_version, mac_ver=mac_version)
+	return versions
 
 result = subprocess.check_output(["git", "diff-index", "--cached", "--name-only", "HEAD"])
 modified_files = result.split()
 modified_files = [os.path.abspath(f) for f in modified_files]
-#print modified_files
 
-xamarin_version, error = subprocess.Popen("ls -l /Library/Frameworks/Xamarin.iOS.framework/Versions/ | grep Current | sed -n 's/.*Current -> //p'", shell=True, stdout=subprocess.PIPE).communicate()
-xamarin_version = "Xamarin.iOS {ver}".format(ver=xamarin_version)
 # the path to the file that holds the commit message
 arg_len = len(sys.argv)
-#print(arg_len)
-#print(sys.argv)
 msg_file_path = sys.argv[1]
 commit_type = sys.argv[2] if arg_len > 2 else None
 sha = sys.argv[3] if arg_len > 3 else None
@@ -78,7 +83,6 @@ sha = sys.argv[3] if arg_len > 3 else None
 if commit_type is None:
 	names = fetch_sln_names(modified_files)
 	prefix = create_prefix(names)
-	prefix += '\n' + xamarin_version
-	#print(names)
+	prefix += '\n' + get_framework_versions()
 
 	prepare_commit_msg(msg_file_path, prefix)
