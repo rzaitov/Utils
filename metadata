@@ -22,7 +22,7 @@ elif args.mac:
 	platform = "mac"
 
 # additional tags per platform
-platform_tags = {"ios": ["iOS8"],
+platform_tags = {"ios": ["iOS9", "iOS8"],
 		"android": [],
 		"wp": [],
 		"mac": ["Yosemite"]
@@ -42,6 +42,7 @@ content_template = """
 	<SupportedPlatforms>{platform}</SupportedPlatforms>
 	<Gallery>false|true</Gallery>
 	<MinimumLicenseRequirement>Starter|Indie|Business|Enterprise</MinimumLicenseRequirement>
+	<Brief>Add brief here</Brief>
 </SampleMetadata>
 """
 all_tags = []
